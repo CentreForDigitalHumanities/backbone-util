@@ -1,4 +1,4 @@
-# Contributing to @dhl-uu/backbone-util
+# Contributing to @uu-cdh/backbone-util
 
 ## Required software
 

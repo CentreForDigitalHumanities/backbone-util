@@ -1,4 +1,4 @@
-# @dhl-uu/backbone-util
+# @uu-cdh/backbone-util
 
 Various utilities for Backbone applications.
 
@@ -14,7 +14,7 @@ If you have a workflow in which you install dependencies from [npm](https://npmj
 
 ``` bash
 // could also use yarn, pnpm, etcetera
-npm add @dhl-uu/backbone-util
+npm add @uu-cdh/backbone-util
 ```
 
 ``` javascript
