@@ -36,6 +36,7 @@ module.exports = function(config) {
                 require('@rollup/plugin-babel').default({
                     presets: ['power-assert'],
                     babelHelpers: 'bundled',
+                    include: 'src/*.js',
                 }),
             ],
             output: {
