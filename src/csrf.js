@@ -4,7 +4,7 @@ import Cookies from 'js-cookie';
 // URLs starting with // or http: are not relative to the same host.
 var nonRelative = /^(https?:)?\/\//;
 // ... unless that is exactly what comes next.
-var sameOrigin = RegExp(window.location.host);
+var sameOrigin = RegExp(nonRelative.source + window.location.host + '($|/)');
 
 // Expected types of the arguments to `wrapWithCSRF`.
 var requirements = {
@@ -38,11 +38,11 @@ export default function wrapWithCSRF(sync, header, cookie) {
             // We first check the options, because these will override whatever
             // `Backbone.sync` computes based on the standalone `method`
             // argument.
-            options.method === 'GET' ||
-            options.method === 'HEAD' ||
+            opt.method === 'GET' ||
+            opt.method === 'HEAD' ||
             // Otherwise, we know that `'read'` is the only nonmodifying CRUD
             // method in Backbone's book.
-            !options.method && method === 'read' ||
+            !opt.method && method === 'read' ||
             // Without any URL, `Backbone.sync` will error.
             !url ||
             // We must not leak the CSRF cookie in requests to other hosts.
@@ -55,7 +55,7 @@ export default function wrapWithCSRF(sync, header, cookie) {
         // original `options` or `options.headers`.
         var headers = opt.headers || {}, extension = {};
         extension[header] = Cookies.get(cookie);
-        opt.headers = defaults(extension, headers);
+        opt = defaults({headers: defaults(extension, headers)}, opt);
         return sync(method, model, opt);
     };
 }
