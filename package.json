@@ -42,5 +42,8 @@
     "rollup": "^4.10.0",
     "rollup-plugin-node-polyfills": "^0.2.1",
     "sinon": "^17.0.1"
+  },
+  "optionalDependencies": {
+    "js-cookie": "^3.0.5"
   }
 }
