@@ -13,7 +13,7 @@ module.exports = function(config) {
 
         // list of files / patterns to load in the browser
         files: [
-            'src/*.test.js'
+            'index.test.js'
         ],
 
         // list of files / patterns to exclude
@@ -23,12 +23,15 @@ module.exports = function(config) {
         // preprocess matching files before serving them to the browser
         // available preprocessors: https://www.npmjs.com/search?q=keywords:karma-preprocessor
         preprocessors: {
-            'src/*.test.js': ['rollup']
+            'index.test.js': ['rollup']
         },
 
         rollupPreprocessor: {
             plugins: [
                 require('rollup-plugin-node-polyfills')(),
+                require('rollup-plugin-glob-import')({
+                    format: 'import',
+                }),
                 require('@rollup/plugin-json')(),
                 require('@rollup/plugin-node-resolve').default({
                     preferBuiltins: true,
