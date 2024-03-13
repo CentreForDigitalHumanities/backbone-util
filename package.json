@@ -11,6 +11,7 @@
   "main": "index.js",
   "type": "module",
   "files": [
+    "index.js",
     "src/*"
   ],
   "scripts": {
