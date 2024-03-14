@@ -25,6 +25,7 @@
     "backbone"
   ],
   "dependencies": {
+    "@uu-cdh/timing-util": "^0.1.1",
     "underscore": "^1.13.6"
   },
   "devDependencies": {
