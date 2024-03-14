@@ -2,6 +2,7 @@ import assert from 'assert';
 import sinon from 'sinon';
 
 import _ from 'underscore';
+import Backbone from 'backbone';
 import Cookies from 'js-cookie';
 
 import wrapWithCSRF from './csrf.js';
@@ -34,6 +35,17 @@ describe('wrapWithCSRF', function() {
     it('refuses non-functions as first argument', function() {
         var faulty = _.partial(wrapWithCSRF, myHeader, myHeader, myCookie)
         assert.throws(faulty, TypeError);
+    });
+
+    it('defaults to Backbone.sync if the first argument is null', function() {
+        sinon.spy(Backbone, 'sync');
+        var wrapped = wrapWithCSRF(null, myHeader, myCookie);
+        assert(_.isFunction(wrapped));
+        // We expect an exception because we don't tell Backbone.sync which URL
+        // to visit.
+        assert.throws(wrapped);
+        assert(Backbone.sync.calledOnce);
+        Backbone.sync.restore();
     });
 
     var specTextTemplate = _.template(

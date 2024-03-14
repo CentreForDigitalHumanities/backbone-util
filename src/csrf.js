@@ -1,4 +1,5 @@
 import { defaults, isFunction, isString, result } from 'underscore';
+import Backbone from 'backbone';
 import Cookies from 'js-cookie';
 
 // URLs starting with // or http: are not relative to the same host.
@@ -23,6 +24,7 @@ function bail(key) {
 // 'X-CSRFToken' and a cookie name such as 'csrftoken', create a new variant of
 // the `sync` function. See below for a description of the wrapped function.
 export default function wrapWithCSRF(sync, header, cookie) {
+    sync = sync || Backbone.sync;
     if (!isFunction(sync)) bail('sync');
     if (!header || !isString(header)) bail('header');
     if (!cookie || !isString(cookie)) bail('cookie');
