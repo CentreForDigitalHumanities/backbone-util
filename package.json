@@ -26,6 +26,7 @@
   ],
   "dependencies": {
     "@uu-cdh/timing-util": "^0.1.1",
+    "backbone": "^1.6.0",
     "underscore": "^1.13.6"
   },
   "devDependencies": {
@@ -35,7 +36,6 @@
     "@rollup/plugin-json": "^6.1.0",
     "@rollup/plugin-node-resolve": "^15.2.3",
     "babel-preset-power-assert": "^3.0.0",
-    "backbone": "^1.6.0",
     "karma": "^6.4.2",
     "karma-mocha": "^2.0.1",
     "karma-power-assert": "^1.0.0",
