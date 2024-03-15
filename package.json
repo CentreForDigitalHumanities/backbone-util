@@ -48,6 +48,7 @@
     "sinon": "^17.0.1"
   },
   "optionalDependencies": {
+    "jquery": "^3.7.1",
     "js-cookie": "^3.0.5"
   }
 }
