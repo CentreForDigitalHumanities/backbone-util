@@ -15,11 +15,6 @@ describe('modelSlashUrl', function() {
         collection.url = '/documents';
     });
 
-    afterEach(function() {
-        collection.reset().off();
-        model.off();
-    });
-
     it('returns a function', function() {
         assert(_.isFunction(modelSlashUrl()));
     });
