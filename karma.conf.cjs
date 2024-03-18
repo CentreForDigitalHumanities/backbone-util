@@ -13,6 +13,7 @@ module.exports = function(config) {
 
         // list of files / patterns to load in the browser
         files: [
+            'node_modules/jquery/dist/jquery.min.js',
             'node_modules/underscore/underscore-umd-min.js',
             'node_modules/backbone/backbone-min.js',
             'index.test.js'
@@ -31,6 +32,7 @@ module.exports = function(config) {
         rollupPreprocessor: {
             external: [
                 'backbone',
+                'jquery',
                 'underscore'
             ],
             plugins: [
@@ -55,6 +57,7 @@ module.exports = function(config) {
                 format: 'iife',
                 globals: {
                     underscore: '_',
+                    jquery: '$',
                     backbone: 'Backbone',
                 },
                 sourcemap: 'inline',
