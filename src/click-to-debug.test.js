@@ -4,7 +4,7 @@ import sinon from 'sinon';
 import _ from 'underscore';
 import { View } from 'backbone';
 
-import { getProtoProps } from './click-to-debug.js';
+import getProtoProps from './click-to-debug.js';
 
 // Sinon's way of describing the object we expect out of getProtoProps.
 var expectedProps = {

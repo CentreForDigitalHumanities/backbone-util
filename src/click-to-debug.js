@@ -26,6 +26,6 @@ var extensionMethods = {
 
 // Return a shallow copy of the extension methods so that the original object
 // cannot be tampered with.
-export function getProtoProps() {
+export default function getProtoProps() {
     return _.clone(extensionMethods);
 }
