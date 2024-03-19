@@ -10,11 +10,11 @@ var userMixin = {
             url: this.loginUrl,
             method: 'POST',
             attrs: credentials,
-            success: function(model, response, options) {
-                user.trigger('login:success', user).fetch();
+            success: function(model, response) {
+                user.trigger('login:success', user, response).fetch();
             },
-            error: function() {
-                user.trigger('login:error', user)
+            error: function(model, response) {
+                user.trigger('login:error', user, response);
             },
         });
     },
@@ -24,11 +24,11 @@ var userMixin = {
         return this.save(null, {
             url: this.logoutUrl,
             method: 'POST',
-            success: function() {
-                user.clear().trigger('logout:success', user)
+            success: function(model, response) {
+                user.clear().trigger('logout:success', user, response);
             },
-            error: function() {
-                user.trigger('logout:error', user)
+            error: function(model, response) {
+                user.trigger('logout:error', user, response);
             },
         });
     },
@@ -39,11 +39,11 @@ var userMixin = {
             url: this.registerUrl,
             method: 'POST',
             attrs: details,
-            success: function(model, response, options) {
-                user.trigger('registration:success', response.responseJSON);
+            success: function(model, response) {
+                user.trigger('registration:success', user, response);
             },
-            error: function(model, response, options) {
-                user.trigger('registration:error', response);
+            error: function(model, response) {
+                user.trigger('registration:error', user, response);
             }
         });
     },
@@ -56,11 +56,11 @@ var userMixin = {
             url: this.confirmRegistrationUrl,
             method: 'POST',
             attrs: details,
-            success: function(model, response, options) {
-                user.trigger('confirm-registration:success');
+            success: function(model, response) {
+                user.trigger('confirm-registration:success', user, response);
             },
-            error: function(model, response, options) {
-                user.trigger('confirm-registration:error', response);
+            error: function(model, response) {
+                user.trigger('confirm-registration:error', user, response);
             }
         });
     },
