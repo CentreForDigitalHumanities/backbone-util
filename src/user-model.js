@@ -35,9 +35,10 @@ var userMixin = {
 
     register: function(details) {
         var user = this;
-        return this.save(details, {
+        return this.save(null, {
             url: this.registerUrl,
             method: 'POST',
+            attrs: details,
             success: function(model, response, options) {
                 user.trigger('registration:success', response.responseJSON);
             },
@@ -51,9 +52,10 @@ var userMixin = {
         var details = {};
         details[this.registrationKeyName] = key;
         var user = this;
-        return this.save(details, {
+        return this.save(null, {
             url: this.confirmRegistrationUrl,
             method: 'POST',
+            attrs: details,
             success: function(model, response, options) {
                 user.trigger('confirm-registration:success');
             },
