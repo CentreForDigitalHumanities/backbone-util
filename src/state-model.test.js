@@ -6,6 +6,8 @@ import { Model } from 'backbone';
 
 import getStateMixin from './state-model.js';
 
+// Methods that we expect the mixin *always* to have, regardless of
+// customizations.
 var expectedInterface = {
     bindStateEvents: sinon.match.func,
     broadcastStateEvents: sinon.match.func
@@ -90,33 +92,45 @@ describe('getStateMixin', function() {
             });
 
             it('can handle complex mixtures of changes', function() {
+                // We are going to use separate event listeners for all possible
+                // combinations of event type and attribute name. There are four
+                // event types and in this test, we track three attributes, so
+                // twelve listeners in total.
                 var watchers = [eventWatcher1, eventWatcher2]
                     .concat(_.times(10, function() { return sinon.fake(); }));
                 var attributeNames = ['document', 'page', 'user'];
                 var eventNames = ['add:', 'exit:', 'enter:', 'remove:'];
+                // Attributes before we start listening for events.
                 instance.set({document: 1, page: 10});
+                // Backbone.Model supports recursive changes during model change
+                // events, and so do we. We mimic this below by unsetting the
+                // `page` attribute while the `document` attribute is being
+                // updated. This also enables us to capture simultaneous `add:`
+                // and `remove:` events in a single "burst" of changes.
                 instance.once('change:document', instance.unset.bind(instance, 'page'));
+                // Bind all of our event listeners.
                 _.each(attributeNames, function(attr, i) {
                     _.each(eventNames, function(event, j) {
                         instance.on(event + attr, watchers[i * 4 + j]);
                     });
                 });
+                // Fire away!
                 instance.set({document: 2, user: 'john'});
-                assert(watchers[0].notCalled);
-                assert(watchers[1].calledWith(instance, 1));
-                assert(watchers[2].calledWith(instance, 2));
-                assert(watchers[3].notCalled);
-                assert(watchers[4].notCalled);
-                assert(watchers[5].calledWith(instance, 10));
-                assert(watchers[6].notCalled);
-                assert(watchers[7].calledWith(instance, 10));
-                assert(watchers[8].calledWith(instance, 'john'));
-                assert(watchers[9].notCalled);
-                assert(watchers[10].calledWith(instance, 'john'));
-                assert(watchers[11].notCalled);
-                assert(watchers[1].calledBefore(watchers[2]));
-                assert(watchers[5].calledBefore(watchers[7]));
-                assert(watchers[8].calledBefore(watchers[10]));
+                assert(watchers[0].notCalled, 'add:document');
+                assert(watchers[1].calledWith(instance, 1), 'exit:document');
+                assert(watchers[2].calledWith(instance, 2), 'enter:document');
+                assert(watchers[3].notCalled, 'remove:document');
+                assert(watchers[4].notCalled, 'add:page');
+                assert(watchers[5].calledWith(instance, 10), 'exit:page');
+                assert(watchers[6].notCalled, 'enter:page');
+                assert(watchers[7].calledWith(instance, 10), 'remove:page');
+                assert(watchers[8].calledWith(instance, 'john'), 'add:user');
+                assert(watchers[9].notCalled, 'exit:user');
+                assert(watchers[10].calledWith(instance, 'john'), 'enter:user');
+                assert(watchers[11].notCalled, 'remove:user');
+                assert(watchers[1].calledBefore(watchers[2]), 'exit/enter document');
+                assert(watchers[5].calledBefore(watchers[7]), 'exit/remove page');
+                assert(watchers[8].calledBefore(watchers[10]), 'add/enter user');
             });
         });
     });
