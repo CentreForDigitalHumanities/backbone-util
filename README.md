@@ -97,6 +97,8 @@ The code modules use modern `import`/`export` syntax. If your target environment
 
 ### Module `click-to-debug`
 
+> This module depends on jQuery, which is marked as an `optionalDependency` of `@uu-cdh/backbone-util`.
+
 This module enables you to debug your live application by simply clicking on any view while keeping the alt (option, meta) key pressed. This logs the complete contents of the view to the developer console, so you can inspect its `model`, `collection`, `el`, `cid`, subviews, event listeners, etcetera. Ancestor views (i.e., views of which the `.el` envelops the `.el` of the clicked view) are logged as well. Three ingredients are needed to unlock this magic:
 
 1. Obtain our [mixin](#alt-click-view-mixin) by calling the [`getAltClickMixin` function](#function-getaltclickmixin).
@@ -141,7 +143,7 @@ var anotherDocView = new DocumentView;
 
 **Return value:** alt-click view mixin, described next
 
-**Side effects:*** none
+**Side effects:** none
 
 #### Alt-click view mixin
 
@@ -149,11 +151,11 @@ Plain object with two methods.
 
 ##### Method `enableAltClick`
 
-**Parameters:*** none
+**Parameters:** none
 
-**Return value:*** `this` (so you can chain other view methods)
+**Return value:** `this` (so you can chain other view methods)
 
-**Side effect:*** registers `logInfo` (described next) as click event handler
+**Side effect:** registers `logInfo` (described next) as click event handler
 
 This method should be called *exactly once* in the `initialize` method or `constructor` of the view with the mixin. Event handler registration operates outside of Backbone's standard `delegate`/`undelegate` mechanism. This has several consequences:
 
@@ -164,25 +166,94 @@ This method should be called *exactly once* in the `initialize` method or `const
 
 ##### Method `logInfo`
 
-**Parameter:*** click event object with an `altKey` property
+**Parameter:** click event object with an `altKey` property
 
-**Return value:*** none
+**Return value:** none
 
-**Side effect:*** logs the full contents of the view instance to the developer console.
+**Side effect:** logs the full contents of the view instance to the developer console.
 
 This method purely exists as an event handler. There is no added value in calling it from your own code; if you want to trigger the behavior manually, simply call `console.log(this)`. We document the existence of this method only so that you can avoid having a method with the same name.
 
 ### Module `csrf`
 
+> This module depends on `js-cookie`, which is marked as an `optionalDependency` of `@uu-cdh/backbone-util`.
 
+This module provides a wrapper for [`Backbone.sync`][bb-sync] that automatically adds the [CSRF][csrf] token header to modifying, same-origin requests. This is useful if the backend uses session authentication (which is the default for frameworks such as [Django][django]). The wrapped function can be used as a drop-in replacement for `Backbone.sync`. You can also wrap another function with the same interface as `Backbone.sync`. In this way, you could create a version of `sync` with multiple layers of extensions.
+
+``` javascript
+import Backbone from 'backbone';
+import { wrapWithCSRF } from '@uu-cdh/backbone-util';
+
+// In this case, we override the sync method for the entire
+// application, but you could also override it only for particular
+// model or collection classes. See the next section for the meaning
+// of the arguments.
+Backbone.sync = wrapWithCSRF(null, 'X-CSRFToken', 'csrftoken');
+```
 
 #### Function `wrapWithCSRF`
 
-Default export of `@uu-cdh/backbone-util/src/csrf.js`, reexported by name from the package index.
+**Default export** of `@uu-cdh/backbone-util/src/csrf.js`, **reexported by name** from the package index.
 
-**Parameters:***
+**Parameters:**
 
--
+- `sync`, the implementation of [`Backbone.sync`][bb-sync] that you want to extend. The original `Backbone.sync` is automatically used as a fallback if you pass `null` or `undefined`.
+- `header`, nonempty string with the name of the request header that should contain the CSRF token. There is no default value; consult the documentation of your backend framework on what it should be. In case of uncertainty, try `X-CSRFToken`.
+- `cookie`, the name of the cookie that contains the CSRF token. There is no default value; consult the documentation of your backend framework on what it should be. In case of uncertainty, try `csrftoken`.
+
+**Return value:** a new function with the same interface as `Backbone.sync`, described next
+
+**Side effects:** none
+
+#### `sync`-like function with CSRF header insertion
+
+This function is obtained by calling `wrapWithCSRF`, described above.
+
+**Parameters:** identical to those of [`Backbone.sync`][bb-sync]: `method`, `model`, `options`.
+
+**Return value:** identical to that of the `sync` function that was passed as the first argument to `wrapWithCSRF`. This is generally a promise-like interface, most likely a [`jQuery.jqXHR`][jq-xhr].
+
+**Side effect:** *almost* identical to that of the `sync` function that was passed as the first argument to `wrapWithCSRF`. Generally, an `XMLHttpRequest` is sent (there is no point in adding a CSRF token header otherwise). The response determines the resolution of the returned promise. The only difference with the underlying `sync` function is that a request header with the CSRF token is added under the following conditions:
+
+- `method` is not `'read'`.
+- `options.method` is not `'GET'` or `'HEAD'` (it can be unset).
+- The request URL is on the same host as the current Backbone application.
+
+[bb-sync]: https://backbonejs.org/#Sync
+[csrf]: https://en.wikipedia.org/wiki/Cross-site_request_forgery#Cookie-to-header_token
+[django]: https://www.djangoproject.com/
+[jq-xhr]: https://api.jquery.com/jQuery.ajax/#jqXHR
+
+### Module `future-attribute`
+
+This module provides two ways to postpone a callback until a specific attribute on a model switches from unset to set. The callback is scheduled or invoked immediately if the attribute is already set at the moment of querying. This makes it easier to start processing the model while its data are still being fetched from a remote endpoint.
+
+``` javascript
+import { Model, View } from 'backbone';
+import { when, whenever } from '@uu-cdh/backbone-util';
+
+var BookModel = Model.extend({urlRoot: '/book'});
+var bookInstance = new BookModel({id: 1});
+
+bookInstance.fetch();
+// This will take some time. In the meanwhile, we can already
+// schedule some code:
+
+when(bookInstance, 'title', function(book, title) {
+    // This callback will run once, when the book has a title.
+    alert('Fetched title for book "' + title + '"');
+});
+
+whenever(bookInstance, 'title', function(book, title) {
+    // This callback will run when the book has a title, and
+    // again every time the title changes.
+    $('head title').text(title);
+});
+```
+
+#### Function `when`
+
+Named export of `@uu-cdh/backbone-util/src/future-attribute.js`, reexported by name from the package index.
 
 ## Planned features
 
