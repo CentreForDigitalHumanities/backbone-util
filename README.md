@@ -226,7 +226,7 @@ This function is obtained by calling `wrapWithCSRF`, described above.
 
 ### Module `future-attribute`
 
-This module provides two ways to postpone a callback until a specific attribute on a model switches from unset to set. The callback is scheduled or invoked immediately if the attribute is already set at the moment of querying. This makes it easier to start processing the model while its data are still being fetched from a remote endpoint.
+This module provides two ways to postpone a callback until a specific attribute on a model switches from unset to set. The callback is scheduled or invoked immediately if the attribute is already set at the moment of querying. This saves you from writing an `if`/`else` every time a callback depends on the presence of an attribute that might or might not be already set.
 
 ``` javascript
 import { Model, View } from 'backbone';
@@ -253,7 +253,75 @@ whenever(bookInstance, 'title', function(book, title) {
 
 #### Function `when`
 
-Named export of `@uu-cdh/backbone-util/src/future-attribute.js`, reexported by name from the package index.
+**Named export** of `@uu-cdh/backbone-util/src/future-attribute.js`, **reexported by name** from the package index.
+
+**Parameters:**
+
+- `model`, the model instance on which you expect the attribute to appear.
+- `attribute`, the name of the attribute that you expect to be eventually set.
+- `handler`, the callback that should be invoked when the attribute is first set. It receives the same `(model, value, options)` arguments as a `model.on('change:attribute')` callback. `options` is an empty object if `attribute` was already set before `when` was called.
+- `context`, optional `this` binding for the `handler`. If unspecified, `model` is used.
+
+**Return value:** none
+
+**Side effect:** either schedules the `handler` for a later cycle of the event loop, if the `attribute` is already set, or registers `handler` as a one-time event handler for `'change:attribute'`, if the `attribute` is not yet set. If `context` is defined and it implements the [`Events`][bb-events] interface, `context.listenToOnce` is used to register the handler, otherwise `model.once`.
+
+It is important to realize that the `handler` *always runs async*, if it runs at all. In other words, it never runs before the call to `when` ends. This is one major difference from `whenever`, discussed next. The other major difference is that `handler` runs at most once, while `whenever` might cause it to run multiple times.
+
+#### Function `whenever`
+
+**Named export** of `@uu-cdh/backbone-util/src/future-attribute.js`, **reexported by name** from the package index.
+
+*The parameters and return value are identical to those of `when`.*
+
+**Parameters:**
+
+- `model`, the model instance on which you expect the attribute to appear.
+- `attribute`, the name of the attribute that you expect to be eventually set.
+- `handler`, the callback that should be invoked when the attribute is first set. It receives the same `(model, value, options)` arguments as a `model.on('change:attribute')` callback. `options` is an empty object if `attribute` was already set before `when` was called.
+- `context`, optional `this` binding for the `handler`. If unspecified, `model` is used.
+
+**Return value:** none
+
+**Side effect:** `whenever(model, attribute, handler, context)` is roughly equivalent to `model.on('change:attribute', handler, context)`, or `context.listenTo(model, 'change:attribute', handler)` if `context` is defined and implements the [`Events`][bb-events] interface. The one major difference is that `handler` is *also* immediately invoked if the `attribute` is already set.
+
+Contrary to `when`, if the `attribute` is already set, the `handler` is invoked *immediately*. It may also run more than once, if the `attribute` changes value after being first set.
+
+[bb-events]: https://backbonejs.org/#Events
+
+### Module `internal-links`
+
+This module makes it easy to pass `{pushState: true}` to [`Backbone.history.start`][bb-hist-start], scatter hyperlinks like `<a href="/document/1">first document</a>` throughout your HTML and have them handled automatically by your own [routers][bb-router], without causing the browser to reload the page.
+
+``` javascript
+import { View, Router, history, $ } from 'backbone';
+import { makeLinkEnabler } from '@uu-cdh/backbone-util';
+
+var LinkEnabler = makeLinkEnabler();
+
+// Keep this instance around as a global singleton.
+var enableInternalLinks = new LinkEnabler;
+
+var router = new Router({
+    '/document(/:id)': function(id) {
+        // This will happen when the user clicks the link.
+        alert('You opened document ' + id);
+    }
+});
+
+var IndexView = View.extend({
+    render: function() {
+        // Clicking this link will *not* reload the page.
+        this.$el.html('<a href="/document/1">first document</a>');
+        return this;
+    }
+});
+
+$(function() {
+    history.start({pushState: true});
+    new IndexView().render().$el.appendTo(document.body);
+});
+```
 
 ## Planned features
 
