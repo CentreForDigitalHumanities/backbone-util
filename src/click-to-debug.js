@@ -26,6 +26,6 @@ var extensionMethods = {
 
 // Return a shallow copy of the extension methods so that the original object
 // cannot be tampered with.
-export default function getProtoProps() {
+export default function getAltClickMixin() {
     return _.clone(extensionMethods);
 }
