@@ -97,6 +97,8 @@ The code modules use modern `import`/`export` syntax. If your target environment
 
 ### Module `click-to-debug`
 
+[view source](https://github.com/CentreForDigitalHumanities/backbone-util/tree/main/src/click-to-debug.js)
+
 > This module depends on jQuery, which is marked as an `optionalDependency` of `@uu-cdh/backbone-util`.
 
 This module enables you to debug your live application by simply clicking on any view while keeping the alt (option, meta) key pressed. This logs the complete contents of the view to the developer console, so you can inspect its `model`, `collection`, `el`, `cid`, subviews, event listeners, etcetera. Ancestor views (i.e., views of which the `.el` envelops the `.el` of the clicked view) are logged as well. Three ingredients are needed to unlock this magic:
@@ -176,6 +178,8 @@ This method purely exists as an event handler. There is no added value in callin
 
 ### Module `csrf`
 
+[view source](https://github.com/CentreForDigitalHumanities/backbone-util/tree/main/src/csrf.js)
+
 > This module depends on `js-cookie`, which is marked as an `optionalDependency` of `@uu-cdh/backbone-util`.
 
 This module provides a wrapper for [`Backbone.sync`][bb-sync] that automatically adds the [CSRF][csrf] token header to modifying, same-origin requests. This is useful if the backend uses session authentication (which is the default for frameworks such as [Django][django]). The wrapped function can be used as a drop-in replacement for `Backbone.sync`. You can also wrap another function with the same interface as `Backbone.sync`. In this way, you could create a version of `sync` with multiple layers of extensions.
@@ -226,9 +230,11 @@ This function is obtained by calling `wrapWithCSRF`, described above.
 
 ### Module `future-attribute`
 
+[view source](https://github.com/CentreForDigitalHumanities/backbone-util/tree/main/src/future-attribute.js)
+
 This module provides two ways to postpone a callback until a specific attribute on a model switches from unset to set. The callback is scheduled or invoked immediately if the attribute is already set at the moment of querying. This saves you from writing an `if`/`else` every time a callback depends on the presence of an attribute that might or might not be already set.
 
-``` javascript
+```javascript
 import { Model, View } from 'backbone';
 import { when, whenever } from '@uu-cdh/backbone-util';
 
@@ -291,7 +297,9 @@ Contrary to `when`, if the `attribute` is already set, the `handler` is invoked 
 
 ### Module `internal-links`
 
-This module makes it easy to pass `{pushState: true}` to [`Backbone.history.start`][bb-hist-start], scatter hyperlinks like `<a href="/document/1">first document</a>` throughout your HTML and have them handled automatically by your own [routers][bb-router], without causing the browser to reload the page.
+[view source](https://github.com/CentreForDigitalHumanities/backbone-util/tree/main/src/internal-links.js)
+
+This module makes it easy to pass `{pushState: true}` to [`Backbone.history.start`][bb-hist-start], scatter hyperlinks like `<a href="/document/1">first document</a>` throughout your HTML and have them handled automatically by your own [routers][bb-router], without causing the browser to reload the page. `<area>` tags work as well.
 
 ``` javascript
 import { View, Router, history, $ } from 'backbone';
@@ -318,10 +326,153 @@ var IndexView = View.extend({
 });
 
 $(function() {
+    // Make Backbone recognize routes starting without a hash '#'.
     history.start({pushState: true});
+    // Display the link to the user.
     new IndexView().render().$el.appendTo(document.body);
 });
 ```
+
+[bb-hist-start]: https://backbonejs.org/#History-start
+[bb-router]: https://backbonejs.org/#Routing
+
+#### Function `makeLinkEnabler`
+
+**Default export** of `@uu-cdh/backbone-util/src/internal-links.js`, **reexported by name** from the package index.
+
+**Parameters:**
+
+- `BaseView`, a subclass of `Backbone.View`. The returned "link enabler class" will derive from `BaseView`. Defaults to `Backbone.View` if omitted or `null`.
+- `history`, an instance of (a subclass of) `Backbone.History`. The instance of the link enabler class will call `history.navigate` in order to hand off the hyperlink clicks to your routers. Defaults to `Backbone.history` if omitted or null.
+
+**Return value:** link enabler class, a specialized view class, discussed below.
+
+**Side effects:** none.
+
+#### Link enabler class
+
+This class/constructor is obtained by calling `makeLinkEnabler`, discussed above.
+
+This constructor is a view class, but for most intents and purposes, this fact may be regarded as an implementation detail. You just create a single instance without passing any arguments and keep that instance around. More about the instance in the next section.
+
+You *could* pass the [`el` option][bb-view-el] to the constructor in order to restrict the hyperlink-intercepting magic to a particular element, rather than having it everywhere on the page. In this case, there might be merit in having multiple instances as well.
+
+*Subclassing* the enabler class is unlikely to be useful. However, if you do, the `intercept` method is your most likely target of customization.
+
+[bb-view-el]: https://backbonejs.org/#View-constructor
+
+#### Link enabler instance
+
+This section discusses instances of the class discussed above.
+
+You will rarely need to interact with this instance. However, the following methods and events are potentially useful to know about:
+
+- `instance.undelegateEvents()` can be called in order to temporarily disable the link interception magic.
+- `instance.delegateEvents()` can be called in order to re-enable the link interception magic.
+- `instance.remove()` can be called if you stop using the enabler definitively. Don't worry, this will not remove the DOM element on which the behavior was attached.
+- You can observe the usual `route` and `route:name` events on `history` and your routers in order to be notified of intercepted links.
+
+### Module `mixin`
+
+[view source](https://github.com/CentreForDigitalHumanities/backbone-util/tree/main/src/mixin.js)
+
+This module provides the `mixin` function, an alternative to Underscore's [`_.extend`][_extend] or the builtin [`Object.assign`][object-assign]. Like those functions, it can be used to copy enumerable properties from one object to another, but unlike those functions, it also copies non-enumerable properties. This is likely exactly what you need if the source object has getters and setters, which are non-enumerable by default.
+
+``` javascript
+import { mixin } from '@uu-cdh/backbone-util';
+
+var mySourceObject = {
+    get example() {
+        return 'hi';
+    }
+};
+
+var assigned = Object.assign({}, mySourceObject);
+// assigned.example === undefined
+
+var mixed = mixin({}, mySourceObject);
+// mixed.example === 'hi'
+```
+
+[_extend]: https://underscorejs.org/#extend
+[object-assign]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object/assign
+
+#### Function `mixin`
+
+Default export of `@uu-cdh/backbone-util/src/mixin.js`, reexported by name from the package index.
+
+Parameters:
+
+- `target`, the object to which properties will be copied.
+- Zero or more `source` arguments from which properties will be copied.
+
+Return value: `target`
+
+Side effects: going from left to right, all enumerable and non-enumerable *own* (meaning: non-inherited) properties of each `source` are copied to `target`. If more than one `source` has a property with the same name, the property from the last `source` wins, unless the first one was [non-configurable][defprop-noconfig], in which case `mixin` will likely throw a `TypeError`.
+
+> Since `mixin` only copies own properties, it is technically not an alternative to `_.extend` but to `_.extendOwn` (which, not coincidentally, is also aliased as `_.assign`). In practice, however, properties are usually copied from plain objects, so the difference between `_extend` and `_.extendOwn` does not matter and programmers tend to pick the former for brevity, even though copying of inherited properties is not intended. Plain object do have inherited properties from `Object.prototype`, which are all non-enumerable. Hence, it is important that our `mixin` restricts itself to own properties.
+
+[defprop-noconfig]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object/defineProperty#description
+
+### Module `state-model`
+
+[view source](https://github.com/CentreForDigitalHumanities/backbone-util/tree/main/src/state-model.js)
+
+"Plain vanilla" `Backbone.Model` instances emit convenient `change:attributeName` events, which let you track changes in each individual attribute separately. However, sometimes it is useful to also distinguish whether the attribute is being set after previously being absent, changing between two different values, or being unset. The `state-model` module makes this possible. It also separates the leading and trailing edges of these changes; in other words, separate events are triggered for the old value (or addition) and the new value (or removal) of the attribute.
+
+Why would you need such extremely fine-grained events? The applications are diverse and surprisingly common:
+
+- Automatically attaching *and* detaching main page elements in response to route changes. One possible way to approach this use case is illustrated in the example code below.
+- Responding to the different stages of a user's sign-in/sign-out process.
+- Tracking the various editing stages of a form element (pristine, focused, editing, tainted, valid, invalid, etcetera).
+- Tracking whether a server is reachable; you typically want to respond very differently to a server going *offline* than to a server returning *online*.
+- Your imagination is the limit. 😊
+
+> In case this reminds you of [finite-state machines][fsm]: there is, indeed, a strong overlap in functionality, hence the name "state model". This module was inspired by (and written by the same author as) [backbone-machina][bb-mach].
+
+``` javascript
+import { Model, Router, history } from 'backbone';
+import { getStateMixin } from '@uu-cdh/backbone-util';
+import { homeView, profileView, settingsView } from './your/own/code';
+
+// Obtain the mixin.
+var stateMixin = getStateMixin();
+// Make a class using the mixin.
+var State = Model.extend(stateMixin);
+// Get an instance, initially empty. We will use this below.
+var state = new State;
+
+// Our router. We don't need methods, just names.
+var router = new Router({
+    '': 'home',
+    'home': 'home',
+    'profile': 'profile',
+    'settings': 'settings'
+});
+
+// Now, we use events to declaratively list which main view
+// *should* be on the page, depending on the route.
+router.on({
+    'route:home': () => state.set('mainView', homeView),
+    'route:profile': () => state.set('mainView', profileView),
+    'route:settings': () => state.set('mainView', settingsView),
+});
+history.on('notfound', () => state.unset('mainView'));
+
+// Finally, we use the fine-grained state events to attach the
+// new main view (if there is one) and detach the previous main
+// view (if there is one). Note how we don't need any if-else
+// decision trees and the events ensure consistency. Also, these
+// two event bindings will be sufficient even if we have 100
+// different routes and main views!
+state.on({
+    'exit:mainView': (s, view) => view.$el.detach(),
+    'enter:mainView': (s, view) => view.$el.appendTo('main'),
+});
+```
+
+[fsm]: https://en.wikipedia.org/wiki/Finite-state_machine
+[bb-mach]: https://www.npmjs.com/package/backbone-machina
 
 ## Planned features
 
