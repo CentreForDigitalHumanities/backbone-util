@@ -474,6 +474,82 @@ state.on({
 [fsm]: https://en.wikipedia.org/wiki/Finite-state_machine
 [bb-mach]: https://www.npmjs.com/package/backbone-machina
 
+#### Function `getStateMixin`
+
+**Default export** of `@uu-cdh/backbone-util/src/state-model.js`, **reexported by name** from the package index.
+
+**Parameter:** `options`, an optional control value to customize the mixin. If not omitted, it can be a boolean or a (plain) object with any properties that you want to add to the mixin.
+
+**Return value:** plain object with methods and possibly other properties, suitable as a mixin for a subclass of `Backbone.Model`. Mixin contents are described in the next section.
+
+**Side effects:** none.
+
+#### State model mixin
+
+This is the return value of `getSTateMixin`, discussed above.
+
+By default, the mixin has three methods:
+
+- `preinitialize` is predefined to call `this.bindStateEvents()` (next method) and do nothing else. By including this predefined `preinitialize`, we ensure that the mixin's special events are automatically activated in the constructor. You can safely override this method, or remove it from the mixin by passing `false` to `getStateMixin`, as long as you make sure that `this.bindStateEvents()` is called somewhere in the `initialize`, `preinitialize` or `constructor` method.
+- `bindStateEvents` ensures that the state model's special events will trigger during the lifetime of the model. For this reason, you must be careful not to override the method. If you pass `false` to `getStateMixin` or you override the `preinitialize` method, you must also make sure that `this.bindStateEvents()` is called at some point during the constructor. The special events are discussed in the next section.
+- `broadcastStateEvents` is an internal event handler that runs during `change` events. It triggers the individual events discussed in the next section. You never need to call this method manually.
+
+#### State model events
+
+State models emit the same **"change"** and **"change:[attribute]"** events as regular models. In addition, they trigger four other types of attribute-specific events, depending on the exact nature of the change:
+
+- **"add:[attribute]"** (model, newValue, options): When **attribute** becomes set to `newValue` while it was previously unset.
+- **"exit:[attribute]"** (model, oldValue, options): When **attribute** is no longer set to `oldValue`, either because it changed value or because it is unset.
+- **"enter:[attribute]"** (model, newValue, options): When **attribute** has become set to `newValue`, either due to a change in value or because it was previously unset.
+- **"remove:[attribute]"** (model, oldValue, options): When **attribute** becomes unset while it previously had `oldValue`.
+
+Note that every attribute change comes with **two** of the above events:
+
+- **"add:[attribute]"**+**"enter:[attribute]"** if **attribute** changes from unset to set;
+- **"exit:[attribute]"**+**"enter:[attribute]"** if **attribute** changes from one set value to another;
+- **"exit:[attribute]"**+**"remove:[attribute]"** if **attribute** changes from set to unset.
+
+If you are mostly interested in whether the attribute is set or not, you probably want to listen for the **"add:[attribute]"**/**"remove:[attribute]"** event pair. If every intermediate value matters to you as well, you will want to listen for the **"exit:[attribute]"**/**"enter:[attribute]"** event pair instead.
+
+### Module `trailing-slash`
+
+Suppose that you have a collection whose `.url` is `'/documents'`. When you `.create` a new model in this collection, Backbone will send a `POST` request to `/documents`. If we now suppose that the `.id` of our new model is `4`, Backbone will send a `PUT` request to `/documents/4` when we modify the model and `.save` it. This is the default way in which the `Model.url()` method computes URLs.
+
+Some server side frameworks, such as Django, are very picky about whether a URL ends in a slash or not. Depending on how you configure your URLs, it might be conventional, or the way of least resistance, to include trailing slashes in these URLs. For example, this is the case with [Django REST Framework][drf]. In such scenarios, `Model.url()` is doing exactly the wrong thing by omitting trailing slashes.
+
+This module provides an easy way to ensure that your model's `.url()` includes a trailing slash.
+
+``` javascript
+import { Model } from 'backbone';
+import { modelSlashUrl } from '@uu-cdh/backbone-util';
+
+var MyModel = Model.extend({
+    // MyModel.prototype.url behaves exactly like Model.prototype.url,
+    // except that it always includes a trailing slash.
+    url: modelSlashUrl(Model.prototype.url),
+});
+```
+
+#### Function `modelSlashUrl`
+
+**Default export** of `@uu-cdh/backbone-util/src/trailing-slash.js`, **reexported by name** from the package index.
+
+**Parameter:** `urlMethod`, an existing implementation for `Model.url` that is almost right, except for the trailing slash. Defaults to `Backbone.Model.prototype.url`.
+
+**Return value:** a new function that behaves like `urlMethod`, except for including a trailing slash.
+
+**Side effects:** none.
+
+### Module `user-model`
+
+It is all too common for web applications to have an authentication system where users have to register, sign in and sign out. This module provides a model mixin with ready to use methods and events for the most common situations.
+
+> For TypeScript users, this module comes with a type declarations file. The types are documented further down below.
+
+``` javascript
+
+```
+
 ## Planned features
 
 
