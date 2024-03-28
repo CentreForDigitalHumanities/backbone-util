@@ -7,6 +7,8 @@ export interface UserSettings {
     logoutUrl: string;
     registerUrl: string;
     confirmRegistrationUrl: string;
+    permissionsAttribute?: string;
+    registrationKeyName?: string;
 }
 
 export interface User extends UserSettings {

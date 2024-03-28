@@ -711,7 +711,7 @@ This is the type of the parameter passed to the `login` and `register` methods. 
 
 ##### Type `UserSettings`
 
-This is the base type of the parameter passed to `getUserMixin`. It is an object with four string properties: `loginUrl`, `logoutUrl`, `registerUrl` and `confirmRegistrationUrl`.
+This is the base type of the parameter passed to `getUserMixin`. It is an object with four required string properties, `loginUrl`, `logoutUrl`, `registerUrl` and `confirmRegistrationUrl`, and two optional string properties, `permissionsAttribute` and `registrationKeyName`.
 
 ##### Type `User`
 
