@@ -66,7 +66,7 @@ var userMixin = {
     },
 
     hasPermission: function(permission) {
-        let permissions = this.get(this.permissionsAttribute);
+        var permissions = this.get(this.permissionsAttribute);
         if (!permissions) return false;
         return _.includes(permissions, permission);
     }
