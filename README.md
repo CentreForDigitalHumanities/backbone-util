@@ -727,7 +727,7 @@ function getUserMixin<T extends UserSettings>(settings: T) : User & T;
 
 ## Planned features
 
-
+- A tooltip view mixin and utility function, which takes care of correctly positioning tooltips relative to (a subelement of) another view.
 
 ## Support
 
