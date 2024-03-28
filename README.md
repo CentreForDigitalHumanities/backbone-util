@@ -682,6 +682,49 @@ user.hasPermission('sliceCake'); // true
 user.hasPermission('launchMissile'); // false
 ```
 
+#### TypeScript declarations for `user-model`
+
+Since it is likely that you want to further customize your user model and its types are nontrivial, `@uu-cdh/backbone-util/src/user-model.js` comes with a companion `.d.ts` module to cater to TypeScript users. Please refer to [the source][user-model-dts] for details.
+
+``` typescript
+import { extend } from 'underscore';
+import { Model } from 'backbone';
+import {
+    getUserMixin, StringDict, UserSettings, User
+} from '@uu-cdh/backbone-util/src/user-model.js';
+
+interface MyUser extends User {}
+class MyUser extends Model {}
+extend(MyUser.prototype, getUserMixin({
+    loginUrl: '/auth/login',
+    logoutUrl: '/auth/logout',
+    registerUrl: '/auth/register',
+    confirmRegistrationUrl: '/auth/confirm',
+}));
+```
+
+[user-model-dts]: https://github.com/CentreForDigitalHumanities/backbone-util/blob/main/src/user-model.d.ts
+
+##### Type `StringDict`
+
+This is the type of the parameter passed to the `login` and `register` methods. It is simply `{[key: string]: string}`.
+
+##### Type `UserSettings`
+
+This is the base type of the parameter passed to `getUserMixin`. It is an object with four string properties: `loginUrl`, `logoutUrl`, `registerUrl` and `confirmRegistrationUrl`.
+
+##### Type `User`
+
+The base type of the mixin returned by `getUserMixin`. It extends `UserSettings` and includes the methods documented above.
+
+##### Type `getUserMixin`
+
+The function signature takes into account that you may pass other properties than those specified in `UserSettings`. The return type includes all properties from the argument type as well as all properties from `User`.
+
+``` typescript
+function getUserMixin<T extends UserSettings>(settings: T) : User & T;
+```
+
 ## Planned features
 
 
