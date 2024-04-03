@@ -11,7 +11,7 @@ var userMixin = {
             method: 'POST',
             attrs: credentials,
             success: function(model, response) {
-                user.trigger('login:success', user, response).fetch();
+                user.trigger('login:success', user, response);
             },
             error: function(model, response) {
                 user.trigger('login:error', user, response);

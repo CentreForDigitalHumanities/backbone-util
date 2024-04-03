@@ -99,13 +99,6 @@ describe('userMixin', function() {
             it('triggers a login:success event', function() {
                 assert(eventWatcher.calledWith('login:success', user));
             });
-
-            it('fetches the user data', function() {
-                assert(request.url === settings.urlRoot + '/' + user.id);
-                assert(request.method === 'GET')
-                respondJSON(request, 200, userDetails)
-                sinon.assert.match(user.attributes, userDetails);
-            });
         });
 
         describe('on failed validation', function() {

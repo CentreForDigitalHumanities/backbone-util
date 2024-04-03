@@ -563,7 +563,10 @@ var User = Model.extend(getUserMixin({
 var user = new User;
 
 // Bind some events.
-user.on('login:error', () => alert('oops, login failed!'));
+user.on({
+    'login:success': user.fetch,
+    'login:error': () => alert('oops, login failed!')
+});
 when(user, 'name', () => alert('welcome ' + name));
 user.on('logout:success', () => alert('goodbye!'));
 
@@ -612,7 +615,7 @@ This is the return value of `getUserMixin`, discussed above. Apart from any sett
 
 **Return value:** promise-like object of the same type as returned by `this.save()`, usually a `jQuery.jqXHR`.
 
-**Side effects:** sends a `POST` request to `this.loginUrl` with the `credentials` as a JSON payload. The `credentials` are not stored on the model, but any JSON data included in the response will be saved if the request is successful. As a special case, this method calls `this.fetch()` on success. Apart from the usual **"request"** and **"sync"**/**"error"**, the following events may be triggered:
+**Side effects:** sends a `POST` request to `this.loginUrl` with the `credentials` as a JSON payload. The `credentials` are not stored on the model, but any JSON data included in the response will be saved if the request is successful. Apart from the usual **"request"** and **"sync"**/**"error"**, the following events may be triggered:
 
 - **"login:success"** (model, response): when authentication is successful.
 - **"login:error"** (model, xhr): when authentication fails or the connection errors.
