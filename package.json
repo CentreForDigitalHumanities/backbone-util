@@ -1,6 +1,6 @@
 {
   "name": "@uu-cdh/backbone-util",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Various utilities for Backbone applications",
   "author": "UU Centre for Digital Humanities - Research Software Lab",
   "license": "BSD-3-Clause",
