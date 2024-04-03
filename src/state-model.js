@@ -17,7 +17,7 @@ var stateMixin = {
     },
 
     // The heart of our mixin. For every changed attribute, trigger appropriate
-    // `'add:'`, `'exit:'`, `'enter:'` and `'remove:'` events.
+    // `'set:'`, `'exit:'`, `'enter:'` and `'unset:'` events.
     broadcastStateEvents: function(model, options) {
         var current = this.attributes,
             previous = this.previousAttributes(),
@@ -26,12 +26,12 @@ var stateMixin = {
             if (attr in previous) {
                 this.trigger('exit:' + attr, this, previous[attr], options);
             } else {
-                this.trigger('add:' + attr, this, current[attr], options);
+                this.trigger('set:' + attr, this, current[attr], options);
             }
             if (attr in current) {
                 this.trigger('enter:' + attr, this, current[attr], options);
             } else {
-                this.trigger('remove:' + attr, this, previous[attr], options);
+                this.trigger('unset:' + attr, this, previous[attr], options);
             }
         }
     }
