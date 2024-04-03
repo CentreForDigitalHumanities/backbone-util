@@ -48,9 +48,7 @@ var userMixin = {
         });
     },
 
-    confirmRegistration: function(key) {
-        var details = {};
-        details[this.registrationKeyName] = key;
+    confirmRegistration: function(details) {
         var user = this;
         return this.save(null, {
             url: this.confirmRegistrationUrl,

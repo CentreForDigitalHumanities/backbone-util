@@ -598,10 +598,6 @@ String with the URL to which registration requests should be sent. Required if y
 
 String with the URL to which registration confirmation requests should be sent. Required if you want to use the `confirmRegistration` method.
 
-##### Setting `registrationKeyName`
-
-String with the name of the confirmation token that should be sent in the payload to the registration confirmation endpoint. Defaults to `'key'`. Value must be correct if you want to use the `confirmRegistration` method.
-
 ##### Setting `permissionsAttribute`
 
 String with the name of the attribute that will contain the user's set of permissions. Defaults to `'permissions'`. Value must be correct if you want to use the `hasPermission` method.
@@ -645,11 +641,11 @@ This is the return value of `getUserMixin`, discussed above. Apart from any sett
 
 ##### Method `confirmRegistration`
 
-**Parameter:** `key`, an object with any data that are required in order to confirm registration. Usually, this will be something of the shape `{key: string}`.
+**Parameter:** `details`, an object with any data that are required in order to confirm registration. Usually, this will be something of the shape `{key: string}`.
 
 **Return value:** promise-like object of the same type as returned by `this.save()`, usually a `jQuery.jqXHR`.
 
-**Side effects:** sends a `POST` request to `this.confirmRegistrationUrl` with the `key` as a JSON payload. The `key` are not stored on the model, but any JSON data included in the response will be saved if the request is successful. Apart from the usual **"request"** and **"sync"**/**"error"**, the following events may be triggered:
+**Side effects:** sends a `POST` request to `this.confirmRegistrationUrl` with the `details` as a JSON payload. The `details` are not stored on the model, but any JSON data included in the response will be saved if the request is successful. Apart from the usual **"request"** and **"sync"**/**"error"**, the following events may be triggered:
 
 - **"confirm-registration:success"** (model, response): when confirmation is successful.
 - **"confirm-registration:error"** (model, xhr): when confirmation fails or the connection errors.
@@ -711,7 +707,7 @@ This is the type of the parameter passed to the `login` and `register` methods. 
 
 ##### Type `UserSettings`
 
-This is the base type of the parameter passed to `getUserMixin`. It is an object with four required string properties, `loginUrl`, `logoutUrl`, `registerUrl` and `confirmRegistrationUrl`, and two optional string properties, `permissionsAttribute` and `registrationKeyName`.
+This is the base type of the parameter passed to `getUserMixin`. It is an object with four required string properties, `loginUrl`, `logoutUrl`, `registerUrl` and `confirmRegistrationUrl`, and one optional string property, `permissionsAttribute`.
 
 ##### Type `User`
 
