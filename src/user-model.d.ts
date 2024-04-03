@@ -8,12 +8,10 @@ export interface UserSettings {
     registerUrl: string;
     confirmRegistrationUrl: string;
     permissionsAttribute?: string;
-    registrationKeyName?: string;
 }
 
 export interface User extends UserSettings {
     permissionsAttribute: string;
-    registrationKeyName: string;
 
     login(credentials: StringDict): JQuery.jqXHR;
     logout(): JQuery.jqXHR;

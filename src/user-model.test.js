@@ -289,7 +289,7 @@ describe('userMixin', function() {
 
     describe('confirmRegistration', function() {
         beforeEach(function() {
-            returnValue = user.confirmRegistration(registerKey);
+            returnValue = user.confirmRegistration(confirmData);
         });
 
         it('sends a POST request to the confirmRegistrationUrl', function() {
