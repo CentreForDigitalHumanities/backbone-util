@@ -498,18 +498,18 @@ By default, the mixin has three methods:
 
 State models emit the same **"change"** and **"change:[attribute]"** events as regular models. In addition, they trigger four other types of attribute-specific events, depending on the exact nature of the change:
 
-- **"add:[attribute]"** (model, newValue, options): When **attribute** becomes set to `newValue` while it was previously unset.
+- **"set:[attribute]"** (model, newValue, options): When **attribute** becomes set to `newValue` while it was previously unset.
 - **"exit:[attribute]"** (model, oldValue, options): When **attribute** is no longer set to `oldValue`, either because it changed value or because it is unset.
 - **"enter:[attribute]"** (model, newValue, options): When **attribute** has become set to `newValue`, either due to a change in value or because it was previously unset.
-- **"remove:[attribute]"** (model, oldValue, options): When **attribute** becomes unset while it previously had `oldValue`.
+- **"unset:[attribute]"** (model, oldValue, options): When **attribute** becomes unset while it previously had `oldValue`.
 
 Note that every attribute change comes with **two** of the above events:
 
-- **"add:[attribute]"**+**"enter:[attribute]"** if **attribute** changes from unset to set;
+- **"set:[attribute]"**+**"enter:[attribute]"** if **attribute** changes from unset to set;
 - **"exit:[attribute]"**+**"enter:[attribute]"** if **attribute** changes from one set value to another;
-- **"exit:[attribute]"**+**"remove:[attribute]"** if **attribute** changes from set to unset.
+- **"exit:[attribute]"**+**"unset:[attribute]"** if **attribute** changes from set to unset.
 
-If you are mostly interested in whether the attribute is set or not, you probably want to listen for the **"add:[attribute]"**/**"remove:[attribute]"** event pair. If every intermediate value matters to you as well, you will want to listen for the **"exit:[attribute]"**/**"enter:[attribute]"** event pair instead.
+If you are mostly interested in whether the attribute is set or not, you probably want to listen for the **"set:[attribute]"**/**"unset:[attribute]"** event pair. If every intermediate value matters to you as well, you will want to listen for the **"exit:[attribute]"**/**"enter:[attribute]"** event pair instead.
 
 ### Module `trailing-slash`
 

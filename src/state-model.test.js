@@ -58,8 +58,8 @@ describe('getStateMixin', function() {
                 instance.off().stopListening();
             });
 
-            it('triggers add: and enter: events for new attributes', function() {
-                instance.on('add:document', eventWatcher1);
+            it('triggers set: and enter: events for new attributes', function() {
+                instance.on('set:document', eventWatcher1);
                 instance.on('enter:document', eventWatcher2);
                 instance.set('document', 1);
                 assert(eventWatcher1.calledWith(instance, 1));
@@ -79,11 +79,11 @@ describe('getStateMixin', function() {
                 assert(eventWatcher1.calledBefore(eventWatcher2));
             });
 
-            it('triggers exit: and remove: for removed attributes', function() {
+            it('triggers exit: and unset: for removed attributes', function() {
                 instance.set('document', 2);
                 instance.on({
                     'exit:document': eventWatcher1,
-                    'remove:document': eventWatcher2
+                    'unset:document': eventWatcher2
                 });
                 instance.unset('document');
                 assert(eventWatcher1.calledWith(instance, 2));
@@ -99,14 +99,14 @@ describe('getStateMixin', function() {
                 var watchers = [eventWatcher1, eventWatcher2]
                     .concat(_.times(10, function() { return sinon.fake(); }));
                 var attributeNames = ['document', 'page', 'user'];
-                var eventNames = ['add:', 'exit:', 'enter:', 'remove:'];
+                var eventNames = ['set:', 'exit:', 'enter:', 'unset:'];
                 // Attributes before we start listening for events.
                 instance.set({document: 1, page: 10});
                 // Backbone.Model supports recursive changes during model change
                 // events, and so do we. We mimic this below by unsetting the
                 // `page` attribute while the `document` attribute is being
-                // updated. This also enables us to capture simultaneous `add:`
-                // and `remove:` events in a single "burst" of changes.
+                // updated. This also enables us to capture simultaneous `set:`
+                // and `unset:` events in a single "burst" of changes.
                 instance.once('change:document', instance.unset.bind(instance, 'page'));
                 // Bind all of our event listeners.
                 _.each(attributeNames, function(attr, i) {
@@ -116,21 +116,21 @@ describe('getStateMixin', function() {
                 });
                 // Fire away!
                 instance.set({document: 2, user: 'john'});
-                assert(watchers[0].notCalled, 'add:document');
+                assert(watchers[0].notCalled, 'set:document');
                 assert(watchers[1].calledWith(instance, 1), 'exit:document');
                 assert(watchers[2].calledWith(instance, 2), 'enter:document');
-                assert(watchers[3].notCalled, 'remove:document');
-                assert(watchers[4].notCalled, 'add:page');
+                assert(watchers[3].notCalled, 'unset:document');
+                assert(watchers[4].notCalled, 'set:page');
                 assert(watchers[5].calledWith(instance, 10), 'exit:page');
                 assert(watchers[6].notCalled, 'enter:page');
-                assert(watchers[7].calledWith(instance, 10), 'remove:page');
-                assert(watchers[8].calledWith(instance, 'john'), 'add:user');
+                assert(watchers[7].calledWith(instance, 10), 'unset:page');
+                assert(watchers[8].calledWith(instance, 'john'), 'set:user');
                 assert(watchers[9].notCalled, 'exit:user');
                 assert(watchers[10].calledWith(instance, 'john'), 'enter:user');
-                assert(watchers[11].notCalled, 'remove:user');
+                assert(watchers[11].notCalled, 'unset:user');
                 assert(watchers[1].calledBefore(watchers[2]), 'exit/enter document');
-                assert(watchers[5].calledBefore(watchers[7]), 'exit/remove page');
-                assert(watchers[8].calledBefore(watchers[10]), 'add/enter user');
+                assert(watchers[5].calledBefore(watchers[7]), 'exit/unset page');
+                assert(watchers[8].calledBefore(watchers[10]), 'set/enter user');
             });
         });
     });
