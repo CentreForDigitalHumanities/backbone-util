@@ -68,6 +68,7 @@ describe('wrapWithCSRF', function() {
         var magicReturnValue = 'abc';
         var absolute = '//';
         var http = 'http://';
+        var HTTP = 'HTTP://';
         var https = 'https://';
         var origin = location.host;
         var otherHost = 'non' + origin;
@@ -189,8 +190,13 @@ describe('wrapWithCSRF', function() {
                 assertTransparentPassthrough.call(this);
             });
 
-            it('and https', function() {
+            it('and https, ...', function() {
                 model.url = https + otherHost + path;
+                assertTransparentPassthrough.call(this);
+            });
+
+            it('even if the scheme is in uppercase', function() {
+                model.url = HTTP + otherHost + path;
                 assertTransparentPassthrough.call(this);
             });
         });
@@ -211,7 +217,7 @@ describe('wrapWithCSRF', function() {
                 });
             });
 
-            _.each([absolute, http, https], function(scheme) {
+            _.each([absolute, http, https, HTTP], function(scheme) {
                 it('when the url is same host with ' + scheme, function() {
                     options.url = scheme + origin + path;
                     assertAugmentedPassthrough.call(this);

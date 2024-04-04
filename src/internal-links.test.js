@@ -11,6 +11,7 @@ var testViewTemplate = _.constant(
     '<a class=internal href="/route">click me<a/>\n' +
     '<a class=external href="//example.domain/route">pick me<a/>\n' +
     '<a class=http href="http://example.domain/route">visit me<a/>\n' +
+    '<a class=HTTP href="HTTP://example.domain/route">VISIT me<a/>\n' +
     '<a class=https href="https://example.domain/route">join me<a/>\n' +
     '<map>\n' +
     '    <area class=nolink shape=default />\n' +
@@ -26,7 +27,7 @@ var testViewTemplate = _.constant(
 );
 
 var tagNames = ['a', 'area'];
-var classNames = ['nolink', 'internal', 'external', 'http', 'https'];
+var classNames = ['nolink', 'internal', 'external', 'http', 'HTTP', 'https'];
 
 var TestView = View.extend({
     template: testViewTemplate,

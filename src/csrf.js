@@ -3,9 +3,9 @@ import Backbone from 'backbone';
 import Cookies from 'js-cookie';
 
 // URLs starting with // or http: are not relative to the same host.
-var nonRelative = /^(https?:)?\/\//;
+var nonRelative = /^(https?:)?\/\//i;
 // ... unless that is exactly what comes next.
-var sameOrigin = RegExp(nonRelative.source + window.location.host + '($|/)');
+var sameOrigin = RegExp(nonRelative.source + window.location.host + '($|/)', 'i');
 
 // Expected types of the arguments to `wrapWithCSRF`.
 var requirements = {

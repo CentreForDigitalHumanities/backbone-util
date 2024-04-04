@@ -1,5 +1,7 @@
 import Backbone from 'backbone';
 
+var matchHttp = /^http/i;
+
 /**
  * Create a view class. When instantiated, the view listens for click events in
  * `document.body` in order to capture visits to internal links. In this way,
@@ -48,7 +50,7 @@ export default function makeLinkEnabler(BaseView, history) {
             var href = Backbone.$(event.currentTarget).attr('href');
             if (!href) return;
             if (href.slice(0, 2) === '//') return;
-            if (href.slice(0, 4) === 'http') return;
+            if (matchHttp.test(href)) return;
             event.preventDefault();
             history.navigate(href, {trigger: true});
         },
