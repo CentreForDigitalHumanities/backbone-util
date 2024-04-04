@@ -2,7 +2,6 @@ import _ from 'underscore';
 
 var userMixin = {
     permissionsAttribute: 'permissions',
-    registrationKeyName: 'key',
 
     login: function(credentials) {
         var user = this;
