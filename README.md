@@ -430,6 +430,8 @@ Why would you need such extremely fine-grained events? The applications are dive
 
 > In case this reminds you of [finite-state machines][fsm]: there is, indeed, a strong overlap in functionality, hence the name "state model". This module was inspired by (and written by the same author as) [backbone-machina][bb-mach].
 
+The following example code illustrates how a state model could be used to mediate between route changes and the placement of main page elements.
+
 ``` javascript
 import { Model, Router, history } from 'backbone';
 import { getStateMixin } from '@uu-cdh/backbone-util';
@@ -478,7 +480,7 @@ state.on({
 
 **Default export** of `@uu-cdh/backbone-util/src/state-model.js`, **reexported by name** from the package index.
 
-**Parameter:** `options`, an optional control value to customize the mixin. If not omitted, it can be a boolean or a (plain) object with any properties that you want to add to the mixin.
+**Parameter:** `options`, an optional control value to customize the mixin. It can be `false` in order to omit the `preinitialize` method, or a (plain) object with any properties that you want to add to the mixin.
 
 **Return value:** plain object with methods and possibly other properties, suitable as a mixin for a subclass of `Backbone.Model`. Mixin contents are described in the next section.
 
@@ -488,11 +490,11 @@ state.on({
 
 This is the return value of `getStateMixin`, discussed above.
 
-By default, the mixin has three methods:
+By default, the mixin has three methods, listed below. You do not need to call these methods from your own code, unless you omit or override `preinitialize`. In that case, you need to make a single call to `this.bindStateEvents()` in your own definition of `preinitialize`, `initialize` or `constructor`.
 
-- `preinitialize` is predefined to call `this.bindStateEvents()` (next method) and do nothing else. By including this predefined `preinitialize`, we ensure that the mixin's special events are automatically activated in the constructor. You can safely override this method, or remove it from the mixin by passing `false` to `getStateMixin`, as long as you make sure that `this.bindStateEvents()` is called somewhere in the `initialize`, `preinitialize` or `constructor` method.
-- `bindStateEvents` ensures that the state model's special events will trigger during the lifetime of the model. For this reason, you must be careful not to override the method. If you pass `false` to `getStateMixin` or you override the `preinitialize` method, you must also make sure that `this.bindStateEvents()` is called at some point during the constructor. The special events are discussed in the next section.
-- `broadcastStateEvents` is an internal event handler that runs during `change` events. It triggers the individual events discussed in the next section. You never need to call this method manually.
+- `preinitialize` is predefined to call `this.bindStateEvents()` (next method) and do nothing else. By including this predefined `preinitialize`, we ensure that the mixin's special events are automatically activated in the constructor.
+- `bindStateEvents` ensures that the state model's special events will trigger during the lifetime of the model. For this reason, you must be careful not to override the method. The special events are discussed in the next section.
+- `broadcastStateEvents` is an internal event handler that runs during `change` events. It triggers the individual events discussed in the next section.
 
 #### State model events
 
@@ -526,7 +528,7 @@ import { modelSlashUrl } from '@uu-cdh/backbone-util';
 var MyModel = Model.extend({
     // MyModel.prototype.url behaves exactly like Model.prototype.url,
     // except that it always includes a trailing slash.
-    url: modelSlashUrl(Model.prototype.url),
+    url: modelSlashUrl(),
 });
 ```
 
