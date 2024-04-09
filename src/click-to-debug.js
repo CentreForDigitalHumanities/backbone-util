@@ -1,5 +1,4 @@
 import _ from 'underscore';
-import { View } from 'backbone';
 
 /**
  * View mixin that enables alt-click introspection. It can either be passed at
