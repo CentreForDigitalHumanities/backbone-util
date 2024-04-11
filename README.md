@@ -6,7 +6,7 @@ Various utilities for Backbone applications.
 
 ## Rationale
 
-We built several applications with a [Backbone][backbone] client. While writing those clients, we found ourselves repeating small patterns that were not yet abstracted by Backbone itself. We factored out those patterns and bundled them in this package, so that you can reuse them in your own Backbone single-page applications (SPAs). All of these utilities are small, independent additions to what Backbone can already do:
+[We][rsl] built several applications with a [Backbone][backbone] client. While writing those clients, we found ourselves repeating small patterns that were not yet abstracted by Backbone itself. We factored out those patterns and bundled them in this package, so that you can reuse them in your own Backbone single-page applications (SPAs). All of these utilities are small, independent additions to what Backbone can already do:
 
 - a [view mixin](doc/click-to-debug.md) that causes the view to `console.log` its entire contents when alt-clicked, for easier debugging of the live application;
 - a [`Backbone.sync` wrapper](doc/csrf.md) that automatically inserts a CSRF token header when sending a modifying request to the same origin, which is useful if (for example) you use [Django REST Framework][drf] with session authentication on the server side;
@@ -22,6 +22,7 @@ We provide prototype [mixins](doc/using-mixins.md), rather than full-blown const
 
 [backbone]: https://backbonejs.org/
 [drf]: https://www.django-rest-framework.org/
+[rsl]: https://cdh.uu.nl/about/research-software-lab/
 
 ## Quickstart
 
