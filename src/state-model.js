@@ -43,16 +43,18 @@ var StateMixin = {
 
 /**
  * Acquire a shallow copy of {@link StateMixin} with optional customizations.
- * @param {boolean|Object} [options] `false` to omit {@link
-   StateMixin.preinitialize} or an object with any properties and methods to add
- * to the mixin.
+ * @param {Object} [options] Object with any properties and methods to add to
+ * the mixin.
+ * @param {boolean|Function} [options.preinitialize] As a special case, instead
+ * of overriding {@link StateMixin.preinitialize}, you can also set this option
+ * to `false` in order to omit the method from the mixin entirely.
  * @returns {StateMixin} Customized copy of {@link StateMixin}.
  */
 function getStateMixin(options) {
     var mixin = StateMixin;
-    if (options === false) {
+    if (options && options.preinitialize === false) {
         mixin = _.omit(mixin, 'preinitialize');
-        options = null;
+        options = _.omit(options, 'preinitialize');
     }
     return _.extend({}, mixin, options);
 }

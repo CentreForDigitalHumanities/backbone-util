@@ -136,18 +136,22 @@ describe('getStateMixin', function() {
         });
     });
 
-    describe('with false option', function() {
+    describe('with preinitialize: false option', function() {
         beforeEach(function() {
-            mixin = getStateMixin(false);
+            mixin = getStateMixin({
+                preinitialize: false,
+                banana: 'green',
+            });
         });
 
         it('omits the preinitialize method', function() {
             sinon.assert.match(mixin, expectedInterface);
             assert(!('preinitialize' in mixin));
+            assert(mixin.banana === 'green');
         });
     });
 
-    describe('with object option', function() {
+    describe('with other object options', function() {
         var overrides = {
             preinitialize: sinon.fake(),
             banana: 'brown'

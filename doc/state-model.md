@@ -65,7 +65,7 @@ state.on({
 
 **Default export** of `@uu-cdh/backbone-util/src/state-model.js`, **reexported by name** from the package index.
 
-**Parameter:** `options`, an optional control value to customize the mixin. It can be `false` in order to omit the `preinitialize` method, or a (plain) object with any properties that you want to add to the mixin.
+**Parameter:** `options`, a (plain) object with any properties that you want to add to the mixin. As a special case, you can set `preinitialize: false`, which causes the `preinitialize` method to be omitted entirely.
 
 **Return value:** plain object with methods and possibly other properties, suitable as a mixin for a subclass of `Backbone.Model`. Mixin contents are described in the next section.
 
