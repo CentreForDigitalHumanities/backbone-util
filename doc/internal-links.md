@@ -73,5 +73,5 @@ You will rarely need to interact with this instance. However, the following meth
 
 - `instance.undelegateEvents()` can be called in order to temporarily disable the link interception functionality.
 - `instance.delegateEvents()` can be called in order to re-enable the link interception functionality.
-- `instance.remove()` can be called if you stop using the enabler definitively. Don't worry, this will not remove the DOM element on which the behavior was attached.
+- `instance.remove()` can be called if you stop using the enabler definitively. This will **not** remove the DOM element on which the behavior was attached.
 - You can observe the usual `route` and `route:name` events on `history` and your routers in order to be notified of intercepted links.
