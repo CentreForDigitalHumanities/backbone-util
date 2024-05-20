@@ -44,7 +44,7 @@ export default function makeLinkEnabler(BaseView, history) {
 
         /** Event handler that intercepts internal navigation, handling it with
          * `pushState` events instead of page reloads. You do not need to call
-         * this method manually. Do NOT override.
+         * this method manually.
          * @see {@link https://backbonejs.org/#Router-navigate} */
         intercept: function(event) {
             var href = Backbone.$(event.currentTarget).attr('href');
