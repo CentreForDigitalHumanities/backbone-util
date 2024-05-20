@@ -59,7 +59,7 @@ This class/constructor is obtained by calling `makeLinkEnabler`, discussed above
 
 This constructor is a view class, but for most intents and purposes, this fact may be regarded as an implementation detail. You just create a single instance without passing any arguments and keep that instance around. More about the instance in the next section.
 
-You *could* pass the [`el` option][bb-view-el] to the constructor in order to restrict the hyperlink-intercepting magic to a particular element, rather than having it everywhere on the page. In this case, there might be merit in having multiple instances as well.
+You *could* pass the [`el` option][bb-view-el] to the constructor in order to restrict the hyperlink-intercepting functionality to a particular element, rather than having it everywhere on the page. In this case, there might be merit in having multiple instances as well.
 
 *Subclassing* the enabler class is unlikely to be useful. However, if you do, the `intercept` method is your most likely target of customization.
 
@@ -71,7 +71,7 @@ This section discusses instances of the class discussed above.
 
 You will rarely need to interact with this instance. However, the following methods and events are potentially useful to know about:
 
-- `instance.undelegateEvents()` can be called in order to temporarily disable the link interception magic.
-- `instance.delegateEvents()` can be called in order to re-enable the link interception magic.
+- `instance.undelegateEvents()` can be called in order to temporarily disable the link interception functionality.
+- `instance.delegateEvents()` can be called in order to re-enable the link interception functionality.
 - `instance.remove()` can be called if you stop using the enabler definitively. Don't worry, this will not remove the DOM element on which the behavior was attached.
 - You can observe the usual `route` and `route:name` events on `history` and your routers in order to be notified of intercepted links.
