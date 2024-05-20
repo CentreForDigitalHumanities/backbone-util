@@ -48,26 +48,32 @@ describe('wrapWithCSRF', function() {
         Backbone.sync.restore();
     });
 
-    var specTextTemplate = _.template(
-        'refuses <%- fault %>strings as <%- ordinal %> argument'
-    );
-    _.each(['second', 'third'], function(ordinal, index) {
-        _.each({'non-': _.noop, 'empty ': ''}, function(value, fault) {
-            var specText = specTextTemplate({ordinal: ordinal, fault: fault});
-            var secondArg = index === 0 ? value : myHeader;
-            var thirdArg = index === 1 ? value : myCookie;
-            var faulty = _.partial(wrapWithCSRF, _.noop, secondArg, thirdArg);
+    function assertRejectArgs(first, second, third) {
+        var faulty = _.partial(wrapWithCSRF, first, second, third);
+        assert.throws(faulty, TypeError);
+    }
 
-            it(specText, function() {
-                assert.throws(faulty, TypeError);
-            });
-        });
+    it('refuses non-strings as second argument', function() {
+        assertRejectArgs(_.noop, _.noop, myCookie);
+    });
+
+    it('refuses empty strings as second argument', function() {
+        assertRejectArgs(_.noop, '', myCookie);
+    });
+
+    it('refuses non-strings as third argument', function() {
+        assertRejectArgs(_.noop, myHeader, _.noop);
+    });
+
+    it('refuses empty strings as third argument', function() {
+        assertRejectArgs(_.noop, myHeader, '');
     });
 
     describe('syncWithCSRF', function() {
         var magicReturnValue = 'abc';
         var absolute = '//';
         var http = 'http://';
+        var HTTP = 'HTTP://';
         var https = 'https://';
         var origin = location.host;
         var otherHost = 'non' + origin;
@@ -151,22 +157,24 @@ describe('wrapWithCSRF', function() {
                 assertTransparentPassthrough.call(this);
             });
 
-            it('when the method is "read", ...', function() {
-                method = 'read';
-                assertTransparentPassthrough.call(this);
-            });
+            describe('when the method is "read"...', function() {
+                it('and model.url is a string', function() {
+                    method = 'read';
+                    assertTransparentPassthrough.call(this);
+                });
 
-            it('regardless of whether model.url is function, ...', function() {
-                method = 'read';
-                model.url = _.constant(path);
-                assertTransparentPassthrough.call(this);
-            });
+                it('and model.url is a function', function() {
+                    method = 'read';
+                    model.url = _.constant(path);
+                    assertTransparentPassthrough.call(this);
+                });
 
-            it('or the url is passed as an option', function() {
-                method = 'read';
-                delete model.url;
-                options.url = path;
-                assertTransparentPassthrough.call(this);
+                it('and the url is passed as an option', function() {
+                    method = 'read';
+                    delete model.url;
+                    options.url = path;
+                    assertTransparentPassthrough.call(this);
+                });
             });
 
             it('when the options override the method to GET', function() {
@@ -179,19 +187,26 @@ describe('wrapWithCSRF', function() {
                 assertTransparentPassthrough.call(this);
             });
 
-            it('when the url is on another host, ...', function() {
-                model.url = absolute + otherHost + path;
-                assertTransparentPassthrough.call(this);
-            });
+            describe('when the url is on another host, ...', function() {
+                it('with a double slash anchor', function() {
+                    model.url = absolute + otherHost + path;
+                    assertTransparentPassthrough.call(this);
+                });
 
-            it('including via http, ...', function() {
-                model.url = http + otherHost + path;
-                assertTransparentPassthrough.call(this);
-            });
+                it('with http scheme', function() {
+                    model.url = http + otherHost + path;
+                    assertTransparentPassthrough.call(this);
+                });
 
-            it('and https', function() {
-                model.url = https + otherHost + path;
-                assertTransparentPassthrough.call(this);
+                it('with https scheme', function() {
+                    model.url = https + otherHost + path;
+                    assertTransparentPassthrough.call(this);
+                });
+
+                it('with the scheme in uppercase', function() {
+                    model.url = HTTP + otherHost + path;
+                    assertTransparentPassthrough.call(this);
+                });
             });
         });
 
@@ -204,14 +219,14 @@ describe('wrapWithCSRF', function() {
             });
 
             _.each(['POST', 'PUT', 'PATCH', 'DELETE'], function(override) {
-                it('when options.method is modifying', function() {
+                it('when options.method is ' + override, function() {
                     method = 'read';
                     options.method = override;
                     assertAugmentedPassthrough.call(this);
                 });
             });
 
-            _.each([absolute, http, https], function(scheme) {
+            _.each([absolute, http, https, HTTP], function(scheme) {
                 it('when the url is same host with ' + scheme, function() {
                     options.url = scheme + origin + path;
                     assertAugmentedPassthrough.call(this);

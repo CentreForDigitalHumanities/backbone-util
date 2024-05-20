@@ -3,10 +3,10 @@ export interface StringDict {
 }
 
 export interface UserSettings {
-    loginUrl: string;
-    logoutUrl: string;
-    registerUrl: string;
-    confirmRegistrationUrl: string;
+    loginUrl?: string;
+    logoutUrl?: string;
+    registerUrl?: string;
+    confirmRegistrationUrl?: string;
     permissionsAttribute?: string;
 }
 

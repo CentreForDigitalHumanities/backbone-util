@@ -2,70 +2,71 @@ import assert from 'assert';
 
 import mixin from './mixin.js';
 
-class Base {
+class Muppet {
     constructor(arg) {
-        this.foo = arg;
+        this.hobby = arg;
     }
-    bar() {
-        return 'bar';
+    skin() {
+        return 'fluffy';
     }
-    get baz() {
-        return this.foo;
+    get pastime() {
+        return this.hobby;
     }
-    set baz(arg) {
-        this.foo = arg;
-    }
-}
-
-class Mixin {
-    foobar() {
-        return 'foobar';
-    }
-    get foobaz() {
-        return this.foofoo;
-    }
-    set foobaz(arg) {
-        this.foofoo = arg;
+    set pastime(arg) {
+        this.hobby = arg;
     }
 }
 
-class Derived extends Base {
+// We will be using Gourmet.prototype as a mixin below.
+class Gourmet {
+    appetite() {
+        return 'hungry';
+    }
+    get favoriteFood() {
+        return this.favorite;
+    }
+    set favoriteFood(arg) {
+        this.favorite = arg;
+    }
+}
+
+class CookieMonster extends Muppet {
     constructor(arg) {
         super(arg);
-        this.foofoo = arg;
+        this.favorite = arg;
     }
 }
-mixin(Derived.prototype, Mixin.prototype, { foobarbaz: 'foobarbaz' });
+mixin(CookieMonster.prototype, Gourmet.prototype, { motto: 'Chewabanga!' });
 
 describe('mixin', function() {
     var obj;
 
     beforeEach(function() {
-        obj = new Derived('beans');
+        obj = new CookieMonster('cookies');
     });
 
     it('respects class inheritance', function() {
-        assert(obj.foo === 'beans');
-        assert(obj.bar() === 'bar');
-        assert(obj.baz === 'beans');
-        obj.baz = 'lentils';
-        assert(obj.foo === 'lentils');
-        assert(obj.baz === 'lentils');
+        assert(obj.hobby === 'cookies');
+        assert(obj.skin() === 'fluffy');
+        assert(obj.pastime === 'cookies');
+        obj.pastime = 'more cookies!';
+        assert(obj.hobby === 'more cookies!');
+        assert(obj.pastime === 'more cookies!');
     });
 
     it('does not overwrite the constructor', function() {
-        assert(Mixin.prototype.constructor === Mixin);
-        assert(Derived.prototype.constructor === Derived);
-        assert(Derived !== Mixin);
-        assert(obj.foofoo === 'beans');
+        assert(Gourmet.prototype.constructor === Gourmet);
+        assert(CookieMonster.prototype.constructor === CookieMonster);
+        assert(CookieMonster !== Gourmet);
+        assert(obj.favorite === 'cookies');
     });
 
     it('works', function() {
-        assert(obj.foobar() === 'foobar');
-        assert(obj.foobaz === 'beans');
-        obj.foobaz = 'lentils';
-        assert(obj.foofoo === 'lentils');
-        assert(obj.foobaz === 'lentils');
-        assert(obj.foobarbaz === 'foobarbaz');
+        assert(obj.appetite() === 'hungry');
+        assert(obj.favoriteFood === 'cookies');
+        obj.favoriteFood = 'more cookies!';
+        assert(obj.favorite === 'more cookies!');
+        assert(obj.favoriteFood === 'more cookies!');
+        assert(obj.motto === 'Chewabanga!');
     });
 });

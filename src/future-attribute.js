@@ -1,11 +1,14 @@
 import { isFunction } from 'underscore';
 import fastTimeout from '@uu-cdh/timing-util/fastTimeout.js';
 
-// Pattern for processing an `attribute` that may still be missing at the time
-// of invocation. This is determined by testing whether `attribute` is present
-// on `model`. `handler` is bound to `context` if passed, otherwise to `model`.
-// `handler` is always invoked async, with the same arguments that the
-// `change:$attribute` event would pass.
+/**
+ * Process the given model attribute once, when it is set.
+ * @param {Backbone.Model} model - Model on which we expect the attribute.
+ * @param {string} attribute - Name of the expected attribute.
+ * @param {AttributeChangeHandler} handler - Callback that should run when the
+   attribute is set. Always runs async.
+ * @param {*} [context=model] - `this` binding for the callback.
+ */
 export function when(model, attribute, handler, context) {
     var eventName = 'change:' + attribute;
     if (model.has(attribute)) {
@@ -18,11 +21,15 @@ export function when(model, attribute, handler, context) {
     }
 }
 
-// Like `when`, with two main differences:
-// 1. If the `attribute` is already present at the time of invocation, the
-//    `handler` is invoked immediately instead of async.
-// 2. The `handler` will continue to be invoked on every subsequent change of
-//    the `attribute`, instead of being called exactly once.
+/**
+ * Process the given model attribute immediately if set, as well as after every
+   change.
+ * @param {Backbone.Model} model - Model on which we expect the attribute.
+ * @param {string} attribute - Name of the expected attribute.
+ * @param {AttributeChangeHandler} handler - Callback that should run when the
+   attribute is set and after every subsequent change.
+ * @param {*} [context=model] - `this` binding for the callback.
+ */
 export function whenever(model, attribute, handler, context) {
     if (model.has(attribute)) {
         handler.call(context || model, model, model.get(attribute), {});
@@ -34,3 +41,14 @@ export function whenever(model, attribute, handler, context) {
         model.on(eventName, handler, context);
     }
 }
+
+/**
+ * Function type used as the handler for `Backbone.Model`'s
+   `'change:[attribute]'` event.
+ * @callback AttributeChangeHandler
+ * @param {Backbone.Model} model - Model of which the attribute changed.
+ * @param {*} value - New value of the changed attribute.
+ * @param {Object} options - Any options passed in the chain of function calls
+   that led to the change.
+ * @see {@link https://backbonejs.org/#Events-catalog}
+ */

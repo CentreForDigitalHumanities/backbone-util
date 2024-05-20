@@ -1,23 +1,27 @@
 import _ from 'underscore';
 
-// Mixin with the methods needed to turn a regular `Backbone.Model` into a state
-// model.
-var stateMixin = {
-    // By providing a ready `preinitialize` that calls `this.bindStateEvents`,
-    // we can often save the user from having to write any additional code.
+/**
+ * Methods that turn a `Backbone.Model` into a state model.
+ * @mixin
+ */
+var StateMixin = {
+    /** The default `preinitialize` calls `this.bindStateEvents()` so you don't
+     * need to write that line. If you do write it yourself, you can omit or
+     * override `preinitialize`. @see getStateMixin */
     preinitialize: function() {
         this.bindStateEvents();
     },
 
-    // Attach our event handler that emits all the specialized events. This must
-    // be called once during instance creation, in the constructor,
-    // `preinitialize` or `initialize` method.
+    /** Enables the specialized state model events. If you omit or override
+     * {@link StateMixin.preinitialize}, call this method once in your own
+     * constructor, `preinitialize` or `initialize` method. */
     bindStateEvents: function() {
         this.on('change', this.broadcastStateEvents);
     },
 
-    // The heart of our mixin. For every changed attribute, trigger appropriate
-    // `'set:'`, `'exit:'`, `'enter:'` and `'unset:'` events.
+    /** Internal method, the heart of the mixin. For every changed attribute,
+     * triggers appropriate`'set:'`, `'exit:'`, `'enter:'` and `'unset:'`
+     * events. You do not need to call it yourself. Do NOT override. */
     broadcastStateEvents: function(model, options) {
         var current = this.attributes,
             previous = this.previousAttributes(),
@@ -37,16 +41,20 @@ var stateMixin = {
     }
 };
 
-// Rather than exporting the raw mixin, we provide a getter function that
-// creates a shallow clone and optionally customizes the methods. If `options`
-// is `true` or omitted, return the mixin without adjustment. If `false`, omit
-// the `preinitialize` method. If `options` is an object, use its properties as
-// overrides.
+/**
+ * Acquire a shallow copy of {@link StateMixin} with optional customizations.
+ * @param {Object} [options] Object with any properties and methods to add to
+ * the mixin.
+ * @param {boolean|Function} [options.preinitialize] As a special case, instead
+ * of overriding {@link StateMixin.preinitialize}, you can also set this option
+ * to `false` in order to omit the method from the mixin entirely.
+ * @returns {StateMixin} Customized copy of {@link StateMixin}.
+ */
 function getStateMixin(options) {
-    var mixin = stateMixin;
-    if (options === false) {
+    var mixin = StateMixin;
+    if (options && options.preinitialize === false) {
         mixin = _.omit(mixin, 'preinitialize');
-        options = null;
+        options = _.omit(options, 'preinitialize');
     }
     return _.extend({}, mixin, options);
 }

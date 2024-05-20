@@ -32,8 +32,9 @@ var registerData = {
     email: userDetails.email
 };
 var registerKey = 'abc456';
+var registerKeyName = 'key';
 var confirmData = {};
-confirmData[User.prototype.registrationKeyName] = registerKey;
+confirmData[registerKeyName] = registerKey;
 
 var jsonHeader = {'Content-Type': 'application/json'};
 
@@ -312,7 +313,7 @@ describe('userMixin', function() {
             });
 
             it('still does not save the registration data', function() {
-                assert(!user.has(registerKey));
+                assert(!user.has(registerKeyName));
             });
 
             it('triggers a confirm-registration:success event', function() {

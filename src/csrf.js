@@ -3,9 +3,9 @@ import Backbone from 'backbone';
 import Cookies from 'js-cookie';
 
 // URLs starting with // or http: are not relative to the same host.
-var nonRelative = /^(https?:)?\/\//;
+var nonRelative = /^(https?:)?\/\//i;
 // ... unless that is exactly what comes next.
-var sameOrigin = RegExp(nonRelative.source + window.location.host + '($|/)');
+var sameOrigin = RegExp(nonRelative.source + window.location.host + '($|/)', 'i');
 
 // Expected types of the arguments to `wrapWithCSRF`.
 var requirements = {
@@ -20,19 +20,31 @@ function bail(key) {
     throw new TypeError(key + ' must be a ' + requirements[key]);
 }
 
-// Given `Backbone.sync` or a similar function, a header name such as
-// 'X-CSRFToken' and a cookie name such as 'csrftoken', create a new variant of
-// the `sync` function. See below for a description of the wrapped function.
+/**
+ * Create a CSRF-aware variant of the {@link sync} function.
+ * @param {sync} [sync=Backbone.sync] - Existing implementation of {@link sync}
+   to wrap.
+ * @param {string} header - Name of the request header, such as 'X-CSRFToken'.
+ * @param {string} cookie - Name of the cookie, such as 'csrftoken'.
+ * @returns {sync} Wrapped implementation of {@link sync} that adds a CSRF token
+   header to modifying same-origin requests.
+ */
 export default function wrapWithCSRF(sync, header, cookie) {
     sync = sync || Backbone.sync;
     if (!isFunction(sync)) bail('sync');
     if (!header || !isString(header)) bail('header');
     if (!cookie || !isString(cookie)) bail('cookie');
 
-    // A wrapper of `sync` that adds a CSRF token header under the following
-    // conditions:
-    // - the request is to the same origin;
-    // - it is a modifying request (any method other than GET or HEAD).
+    /**
+     * @callback sync
+     * @global
+     * @param {string} method - Name of the CRUD method, such as 'read'.
+     * @param {Backbone.Model|Backbone.Collection} model - Model or collection
+       to synchronize.
+     * @param {Object} [options] - Options to customize AJAX request and events.
+     * @returns {Promise<Response>} Promise of the response.
+     * @see {@link https://backbonejs.org/#Sync}
+     */
     return function syncWithCSRF(method, model, options) {
         var opt = options || {};
         var url = opt.url || result(model, 'url');
