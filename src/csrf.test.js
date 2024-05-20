@@ -48,20 +48,25 @@ describe('wrapWithCSRF', function() {
         Backbone.sync.restore();
     });
 
-    var specTextTemplate = _.template(
-        'refuses <%- fault %>strings as <%- ordinal %> argument'
-    );
-    _.each(['second', 'third'], function(ordinal, index) {
-        _.each({'non-': _.noop, 'empty ': ''}, function(value, fault) {
-            var specText = specTextTemplate({ordinal: ordinal, fault: fault});
-            var secondArg = index === 0 ? value : myHeader;
-            var thirdArg = index === 1 ? value : myCookie;
-            var faulty = _.partial(wrapWithCSRF, _.noop, secondArg, thirdArg);
+    function assertRejectArgs(first, second, third) {
+        var faulty = _.partial(wrapWithCSRF, first, second, third);
+        assert.throws(faulty, TypeError);
+    }
 
-            it(specText, function() {
-                assert.throws(faulty, TypeError);
-            });
-        });
+    it('refuses non-strings as second argument', function() {
+        assertRejectArgs(_.noop, _.noop, myCookie);
+    });
+
+    it('refuses empty strings as second argument', function() {
+        assertRejectArgs(_.noop, '', myCookie);
+    });
+
+    it('refuses non-strings as third argument', function() {
+        assertRejectArgs(_.noop, myHeader, _.noop);
+    });
+
+    it('refuses empty strings as third argument', function() {
+        assertRejectArgs(_.noop, myHeader, '');
     });
 
     describe('syncWithCSRF', function() {
