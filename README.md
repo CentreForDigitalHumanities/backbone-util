@@ -11,6 +11,7 @@ Various utilities for Backbone applications.
 - a [view mixin](doc/click-to-debug.md) that causes the view to `console.log` its entire contents when alt-clicked, for easier debugging of the live application;
 - a [`Backbone.sync` wrapper](doc/csrf.md) that automatically inserts a CSRF token header when sending a modifying request to the same origin, which is useful if (for example) you use [Django REST Framework][drf] with session authentication on the server side;
 - [`when` and `whenever` functions](doc/future-attribute.md) that let you postpone code until an attribute is present on a model;
+- an easy way to [enable clickable internal links within your application](doc/internal-links.md) with `pushState: true`;
 - a [very general `mixin` function](doc/mixin.md) that also copies non-enumerable properties, such as getters and setters;
 - a model mixin that [adds finer-grained state change events](doc/state-model.md), which makes it suitable (for example) to act as an intermediary between router events and the placement of main page views;
 - a [`Backbone.Model.url()` wrapper](doc/trailing-slash.md) that ensures URLs end with a slash, which is useful for server frameworks (such as Django) that are picky about it;
@@ -55,6 +56,7 @@ The code modules use modern `import`/`export` syntax. If your target environment
 - [click-to-debug](doc/click-to-debug.md)
 - [csrf](doc/csrf.md)
 - [future-attribute](doc/future-attribute.md)
+- [internal-links](doc/internal-links.md)
 - [mixin](doc/mixin.md)
 - [state-model](doc/state-model.md)
 - [trailing-slash](doc/trailing-slash.md)
