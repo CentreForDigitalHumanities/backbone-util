@@ -31,7 +31,7 @@ describe('getStateMixin', function() {
             it('binds the event handler', function() {
                 mixin.on = sinon.fake();
                 mixin.bindStateEvents();
-                assert(mixin.on.calledWith('change', mixin.broadcastStateEvents));
+                assert(mixin.on.calledWith('all', mixin.broadcastStateEvents));
             });
         });
 
