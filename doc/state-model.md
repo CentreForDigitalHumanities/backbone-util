@@ -79,7 +79,7 @@ By default, the mixin has three methods, listed below. You do not need to call t
 
 - `preinitialize` is predefined to call `this.bindStateEvents()` (next method) and do nothing else. By including this predefined `preinitialize`, we ensure that the mixin's special events are automatically activated in the constructor.
 - `bindStateEvents` ensures that the state model's special events will trigger during the lifetime of the model. For this reason, you must be careful not to override the method. The special events are discussed in the next section.
-- `broadcastStateEvents` is an internal event handler that runs during `change` events. It triggers the individual events discussed in the next section.
+- `broadcastStateEvents` is an internal event handler that runs during `change:[attribute]` events. It triggers the individual events discussed in the next section.
 
 ## State model events
 
