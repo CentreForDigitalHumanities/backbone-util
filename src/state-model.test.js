@@ -31,7 +31,7 @@ describe('getStateMixin', function() {
             it('binds the event handler', function() {
                 mixin.on = sinon.fake();
                 mixin.bindStateEvents();
-                assert(mixin.on.calledWith('change', mixin.broadcastStateEvents));
+                assert(mixin.on.calledWith('all', mixin.broadcastStateEvents));
             });
         });
 
@@ -132,6 +132,24 @@ describe('getStateMixin', function() {
                 assert(watchers['exit:document'].calledBefore(watchers['enter:document']));
                 assert(watchers['exit:page'].calledBefore(watchers['unset:page']));
                 assert(watchers['set:user'].calledBefore(watchers['enter:user']));
+            });
+
+            it('does not cause infinite loops', function() {
+                instance.set('counter', 0);
+                instance.on('enter:extra', function() {
+                    instance.set('counter', instance.get('counter') + 1);
+                });
+                instance.set('extra', 'abc');
+                // In the above lines of code, the `extra` attribute never
+                // changes. Hence, no feedback loop should be possible. However,
+                // in early versions, this is exactly what happened. How?
+                // Because of nested calls to `Backbone.Model#set`. The
+                // outermost call changes the `extra` attribute, so it remains
+                // in the model's `.changed` property during subsequent
+                // iterations of the loops that issues the `change` event. New
+                // iterations keep being added because the `counter` attribute
+                // does change.
+                assert(instance.get('counter') === 1);
             });
         });
     });

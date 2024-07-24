@@ -1,5 +1,7 @@
 import _ from 'underscore';
 
+var changedAttribute = /^change:(.*)$/;
+
 /**
  * Methods that turn a `Backbone.Model` into a state model.
  * @mixin
@@ -16,27 +18,27 @@ var StateMixin = {
      * {@link StateMixin.preinitialize}, call this method once in your own
      * constructor, `preinitialize` or `initialize` method. */
     bindStateEvents: function() {
-        this.on('change', this.broadcastStateEvents);
+        this.on('all', this.broadcastStateEvents);
     },
 
     /** Internal method, the heart of the mixin. For every changed attribute,
      * triggers appropriate`'set:'`, `'exit:'`, `'enter:'` and `'unset:'`
      * events. You do not need to call it yourself. Do NOT override. */
-    broadcastStateEvents: function(model, options) {
+    broadcastStateEvents: function(eventName, model, value, options) {
+        var match = eventName.match(changedAttribute);
+        if (!match) return;
         var current = this.attributes,
             previous = this.previousAttributes(),
-            changed = this.changed;
-        for (var attr in changed) {
-            if (attr in previous) {
-                this.trigger('exit:' + attr, this, previous[attr], options);
-            } else {
-                this.trigger('set:' + attr, this, current[attr], options);
-            }
-            if (attr in current) {
-                this.trigger('enter:' + attr, this, current[attr], options);
-            } else {
-                this.trigger('unset:' + attr, this, previous[attr], options);
-            }
+            attr = match[1];
+        if (attr in previous) {
+            this.trigger('exit:' + attr, this, previous[attr], options);
+        } else {
+            this.trigger('set:' + attr, this, value, options);
+        }
+        if (attr in current) {
+            this.trigger('enter:' + attr, this, value, options);
+        } else {
+            this.trigger('unset:' + attr, this, previous[attr], options);
         }
     }
 };
